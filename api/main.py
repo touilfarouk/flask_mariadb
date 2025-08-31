@@ -1,61 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymysql
-import jwt
-import datetime
-from functools import wraps
 import bcrypt
+from config import db_config
+from utils.auth import generate_token, token_required
 
 app = Flask(__name__)
 CORS(app)
 
-# Secret key for JWT
-app.config['SECRET_KEY'] = 'your_secret_key'
+# ✅ No SECRET_KEY here, we now keep it in config.py
 
-# MySQL database configuration
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',
-  
-    'database': 'comptabilite',
-    'cursorclass': pymysql.cursors.DictCursor
-}
-
-# Utility: generate JWT token
-def generate_token(email, role):
-    payload = {
-        "email": email,
-        "role": role,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
-    }
-    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm="HS256")
-
-# Middleware: verify JWT
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth_header = request.headers.get("Authorization")
-        if not auth_header:
-            return jsonify({"error": "Token is missing"}), 401
-
-        parts = auth_header.split()
-        if len(parts) != 2 or parts[0].lower() != "bearer":
-            return jsonify({"error": "Invalid token format"}), 401
-
-        token = parts[1]
-        try:
-            decoded = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            request.user = decoded
-        except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token expired"}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"error": "Invalid token"}), 401
-
-        return f(*args, **kwargs)
-    return decorated
-
-# Signup route
 @app.route("/auth/signup", methods=["POST"])
 def signup():
     data = request.json
@@ -80,7 +34,7 @@ def signup():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     cursor.execute(
         "INSERT INTO users (firstname, lastname, email, password, role) VALUES (%s, %s, %s, %s, %s)",
-        (firstname, lastname, email, hashed_password, role)
+        (firstname, lastname, email, hashed_password.decode("utf-8"), role)
     )
     conn.commit()
     cursor.close()
@@ -89,7 +43,7 @@ def signup():
     token = generate_token(email, role)
     return jsonify({"message": "Signup successful", "token": token}), 200
 
-# Login route
+
 @app.route("/auth/login", methods=["POST"])
 def login():
     data = request.json
@@ -106,24 +60,22 @@ def login():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if bcrypt.checkpw(password.encode('utf-8'), user['password']):
+    if bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
         token = generate_token(user['email'], user['role'])
         return jsonify({"message": "Login successful", "token": token}), 200
     else:
         return jsonify({"error": "Invalid password"}), 401
 
-# Protected route
+
 @app.route("/protected", methods=["GET"])
 @token_required
 def protected():
-    # Example: you can return user info
-    user_info = {
+    return jsonify({
         "email": request.user['email'],
         "role": request.user['role'],
         "message": "Welcome to the protected route!"
-    }
-    return jsonify(user_info), 200
+    }), 200
+
 
 if __name__ == "__main__":
-    
-    app.run(host="0.0.0.0", port=3000, debug=True)
+  app.run(host="0.0.0.0", port=3000, debug=True)
