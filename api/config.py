@@ -6,5 +6,5 @@ db_config = {
     "user": "root",
     "password": "",
     "database": "comptabilite",
-    "cursorclass": "pymysql.cursors.DictCursor"
+    
 }

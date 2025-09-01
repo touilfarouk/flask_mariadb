@@ -9,6 +9,48 @@ app = Flask(__name__)
 CORS(app)
 
 # ✅ No SECRET_KEY here, we now keep it in config.py
+@app.route("/section/all", methods=["GET"])
+def get_sections():
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT id, label, type, unit FROM section ORDER BY id DESC")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify({"success": True, "data": rows}), 200, {"Cache-Control": "no-store"}
+
+
+# ✅ Section routes
+@app.route("/section/add", methods=["POST"])
+def add_section():
+    data = request.json
+    label = data.get("label")
+    unit = data.get("unit")
+    type = data.get("type")
+    userid = data.get("userid")  # can be None / null
+
+    # ✅ only check required fields
+    if not label or not unit or not type:
+        return jsonify({"error": "Label, Unit, and Type are required"}), 400
+
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO section (label, unit, type, userid) VALUES (%s, %s, %s, %s)",
+        (label, unit, type, userid)  # if userid is None, MySQL will insert NULL
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "id": new_id}), 201
+
+
+
+
+
+
 
 @app.route("/auth/signup", methods=["POST"])
 def signup():
