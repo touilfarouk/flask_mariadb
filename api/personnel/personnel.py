@@ -5,6 +5,17 @@ from config import db_config
 personnel_bp = Blueprint("personnel", __name__, url_prefix="/personnel")
 
 
+@personnel_bp.route("/sections", methods=["GET"])
+def get_sections():
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+    cur = conn.cursor()
+    cur.execute("SELECT id, label FROM section ORDER BY label ASC")
+    sections = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify({"success": True, "data": sections})
+
+
 # ✅ Get all personnel
 @personnel_bp.route("/all", methods=["GET"])
 def get_personnel():
@@ -48,6 +59,21 @@ def add_personnel():
     conn.close()
 
     return jsonify({"success": True, "id": new_id}), 201
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ✅ Assign a section to personnel
