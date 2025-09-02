@@ -27,7 +27,7 @@ def add_section():
     label = data.get("label")
     unit = data.get("unit")
     type = data.get("type")
-    userid = data.get("userid")  # can be None / null
+    personnel_id = data.get("personnel_id")  # can be None / null
 
     # ✅ only check required fields
     if not label or not unit or not type:
@@ -36,8 +36,8 @@ def add_section():
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO section (label, unit, type, userid) VALUES (%s, %s, %s, %s)",
-        (label, unit, type, userid)  # if userid is None, MySQL will insert NULL
+        "INSERT INTO section (label, unit, type, personnel_id) VALUES (%s, %s, %s, %s)",
+        (label, unit, type, personnel_id)  # if personnel_id is None, MySQL will insert NULL
     )
     conn.commit()
     new_id = cursor.lastrowid
