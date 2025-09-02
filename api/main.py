@@ -4,129 +4,15 @@ import pymysql
 import bcrypt
 from config import db_config
 from utils.auth import generate_token, token_required
-
+from section.section import section_bp
+from personnel.personnel import personnel_bp
 app = Flask(__name__)
 CORS(app)
 
 # ✅ No SECRET_KEY here, we now keep it in config.py
-@app.route("/section/all", methods=["GET"])
-def get_sections():
-    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
-    cur = conn.cursor()
-    cur.execute("SELECT id, label, type, unit FROM section ORDER BY id DESC")
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-    return jsonify({"success": True, "data": rows}), 200, {"Cache-Control": "no-store"}
-
-
-# ✅ Section routes
-@app.route("/section/add", methods=["POST"])
-def add_section():
-    data = request.json
-    label = data.get("label")
-    unit = data.get("unit")
-    type = data.get("type")
-    personnel_id = data.get("personnel_id")  # can be None / null
-
-    # ✅ only check required fields
-    if not label or not unit or not type:
-        return jsonify({"error": "Label, Unit, and Type are required"}), 400
-
-    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO section (label, unit, type, personnel_id) VALUES (%s, %s, %s, %s)",
-        (label, unit, type, personnel_id)  # if personnel_id is None, MySQL will insert NULL
-    )
-    conn.commit()
-    new_id = cursor.lastrowid
-    cursor.close()
-    conn.close()
-
-    return jsonify({"success": True, "id": new_id}), 201
-
-
-
-
-
-
-
-# -------------------- Personnel Routes --------------------
-
-# GET all personnel with their section label
-@app.route("/personnel/all", methods=["GET"])
-def get_personnel():
-    conn = pymysql.connect(**db_config)
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT p.id, p.firstname, p.lastname, p.email, p.code_section,
-               GROUP_CONCAT(s.label SEPARATOR ', ') AS section_labels
-        FROM personnel p
-        LEFT JOIN section s ON s.personnel_id = p.id
-        GROUP BY p.id
-        ORDER BY p.id DESC
-    """)
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-    return jsonify({"success": True, "data": rows}), 200, {"Cache-Control": "no-store"}
-
-
-
-# ADD a new personnel
-@app.route("/personnel/add", methods=["POST"])
-def add_personnel():
-    data = request.json
-    firstname = data.get("firstname")
-    lastname = data.get("lastname")
-    email = data.get("email")
-    code_section = data.get("code_section")  # optional
-
-    if not firstname or not lastname or not email:
-        return jsonify({"error": "Firstname, Lastname, and Email are required"}), 400
-
-    conn = pymysql.connect(**db_config)
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO personnel (firstname, lastname, email, code_section) VALUES (%s, %s, %s, %s)",
-        (firstname, lastname, email, code_section)
-    )
-    conn.commit()
-    new_id = cursor.lastrowid
-    cursor.close()
-    conn.close()
-
-    return jsonify({"success": True, "id": new_id}), 201
-
-
-# Optional: assign a section to personnel
-@app.route("/personnel/assign_section", methods=["POST"])
-def assign_section():
-    data = request.json
-    personnel_id = data.get("personnel_id")
-    section_id = data.get("section_id")
-
-    if not personnel_id or not section_id:
-        return jsonify({"error": "Personnel ID and Section ID are required"}), 400
-
-    conn = pymysql.connect(**db_config)
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE section SET personnel_id=%s WHERE id=%s",
-        (personnel_id, section_id)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify({"success": True}), 200
-
-
-
-
-
-
+# 🔹 Register blueprints
+app.register_blueprint(section_bp)
+app.register_blueprint(personnel_bp)
 
 
 
