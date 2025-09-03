@@ -22,7 +22,7 @@ def get_personnel():
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()
     cur.execute("""
-        SELECT p.id, p.firstname, p.lastname, p.email, p.code_section,
+        SELECT p.id, p.firstname, p.lastname, p.role, p.code_section,
                GROUP_CONCAT(s.label SEPARATOR ', ') AS section_labels
         FROM personnel p
         LEFT JOIN section s ON s.personnel_id = p.id
@@ -41,17 +41,17 @@ def add_personnel():
     data = request.json
     firstname = data.get("firstname")
     lastname = data.get("lastname")
-    email = data.get("email")
+    role = data.get("role")
     code_section = data.get("code_section")  # optional
 
-    if not firstname or not lastname or not email:
-        return jsonify({"error": "Firstname, Lastname, and Email are required"}), 400
+    if not firstname or not lastname or not role:
+        return jsonify({"error": "Firstname, Lastname, and role are required"}), 400
 
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO personnel (firstname, lastname, email, code_section) VALUES (%s, %s, %s, %s)",
-        (firstname, lastname, email, code_section)
+        "INSERT INTO personnel (firstname, lastname, role, code_section) VALUES (%s, %s, %s, %s)",
+        (firstname, lastname, role, code_section)
     )
     conn.commit()
     new_id = cursor.lastrowid
