@@ -61,7 +61,8 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    conn = pymysql.connect(**db_config)
+    # utiliser DictCursor pour accéder par clés
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     user = cursor.fetchone()
@@ -71,11 +72,23 @@ def login():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+    # ici password est string (du form), user['password'] est bytes (stocké en DB)
+    if bcrypt.checkpw(password.encode('utf-8'), user['password']):
         token = generate_token(user['email'], user['role'])
-        return jsonify({"message": "Login successful", "token": token}), 200
+        return jsonify({
+            "message": "Login successful",
+            "token": token,
+            "user": {
+                "id": user["id"],
+                "firstname": user["firstname"],
+                "lastname": user["lastname"],
+                "email": user["email"],
+                "role": user["role"]
+            }
+        }), 200
     else:
         return jsonify({"error": "Invalid password"}), 401
+
 
 
 @app.route("/protected", methods=["GET"])

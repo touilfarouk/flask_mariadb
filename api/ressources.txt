@@ -1,0 +1,33 @@
+curl -X POST http://127.0.0.1:3000/personnel/add ^
+  -H "Content-Type: application/json" ^
+  -d "{\"matricule\": 1001, \"nom\": \"Ali Karim\", \"qualification\": \"Technicien\", \"affectation\": \"IT\"}"
+
+curl -X GET http://127.0.0.1:3000/personnel/all
+
+
+
+
+curl -X POST http://127.0.0.1:3000/section/add ^
+  -H "Content-Type: application/json" ^
+  -d "{\"label\": \"Finance\", \"unit\": \"USD\", \"type\": \"Budget\", \"personnels\": [1, 2]}"
+
+
+
+
+curl -X GET http://127.0.0.1:3000/section/all
+
+
+
+
+curl -X POST http://213.179.181.50:5002/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstname": "John",
+    "lastname": "Doe",
+    "email": "john.doe@example.com",
+    "password": "MySecurePassword123",
+    "role": "customer"
+  }'
+
+
+
