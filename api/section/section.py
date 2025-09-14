@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 import pymysql
 from config import db_config
-
+from utils.auth import token_required
 section_bp = Blueprint("section", __name__, url_prefix="/section")
 
 # ✅ Get all sections (with personnel)
 @section_bp.route("/all", methods=["GET"])
+@token_required
 def get_sections():
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()
@@ -26,6 +27,7 @@ def get_sections():
 
 # ✅ Add section (with optional personnel links)
 @section_bp.route("/add", methods=["POST"])
+@token_required
 def add_section():
     data = request.json
     label = data.get("label")
@@ -60,6 +62,7 @@ def add_section():
 
 # ✅ Update section (and reassign personnel)
 @section_bp.route("/update/<int:section_id>", methods=["PUT"])
+@token_required
 def update_section(section_id):
     data = request.json
     label = data.get("label")
@@ -100,6 +103,7 @@ def update_section(section_id):
 
 # ✅ Delete section (links auto-removed by ON DELETE CASCADE)
 @section_bp.route("/delete/<int:section_id>", methods=["DELETE"])
+@token_required
 def delete_section(section_id):
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()

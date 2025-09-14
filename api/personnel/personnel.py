@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, send_file
 import pymysql
 import io
 from datetime import datetime
+from utils.auth import token_required
 #import pandas as pd  # keep for Excel import/export
 from config import db_config
 
@@ -9,6 +10,7 @@ personnel_bp = Blueprint("personnel", __name__, url_prefix="/personnel")
 
 # ✅ Get all personnel with sections
 @personnel_bp.route("/all", methods=["GET"])
+@token_required
 def get_personnel():
     try:
         conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
@@ -33,6 +35,7 @@ def get_personnel():
 
 # ✅ Get personnel by ID (with sections)
 @personnel_bp.route("/<int:personnel_id>", methods=["GET"])
+@token_required
 def get_personnel_by_id(personnel_id):
     try:
         conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
@@ -61,6 +64,7 @@ def get_personnel_by_id(personnel_id):
 
 # ✅ Add new personnel with sections
 @personnel_bp.route("/add", methods=["POST"])
+@token_required
 def add_personnel():
     try:
         data = request.json
@@ -103,6 +107,7 @@ def add_personnel():
 
 # ✅ Update personnel and sections
 @personnel_bp.route("/<int:personnel_id>", methods=["PUT"])
+@token_required
 def update_personnel(personnel_id):
     try:
         data = request.json or {}
@@ -155,6 +160,7 @@ def update_personnel(personnel_id):
 
 # ✅ Delete personnel
 @personnel_bp.route("/<int:personnel_id>", methods=["DELETE"])
+@token_required
 def delete_personnel(personnel_id):
     try:
         conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)

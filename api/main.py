@@ -6,6 +6,7 @@ from config import db_config
 from utils.auth import generate_token, token_required
 from section.section import section_bp
 from personnel.personnel import personnel_bp
+from auth.auth import auth_bp
 app = Flask(__name__)
 CORS(app)
 
@@ -13,80 +14,62 @@ CORS(app)
 # 🔹 Register blueprints
 app.register_blueprint(section_bp)
 app.register_blueprint(personnel_bp)
+app.register_blueprint(auth_bp)
 
 
 
+@app.route("/users", methods=["GET"])
+@token_required
+def get_users():
+    """📋 Récupérer tous les utilisateurs"""
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, firstname, lastname, email, role FROM users")
+    users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify({"data": users}), 200
 
 
-
-
-
-@app.route("/auth/signup", methods=["POST"])
-def signup():
+@app.route("/users/<int:user_id>", methods=["PUT"])
+@token_required
+def update_user(user_id):
+    """✏ Mettre à jour un utilisateur"""
     data = request.json
     firstname = data.get("firstname")
     lastname = data.get("lastname")
-    email = data.get("email")
-    password = data.get("password")
-    role = data.get("role", "customer")
+    role = data.get("role")
 
-    if not firstname or not lastname or not email or not password:
-        return jsonify({"error": "All fields are required"}), 400
+    if not firstname or not lastname or not role:
+        return jsonify({"error": "firstname, lastname et role requis"}), 400
 
     conn = pymysql.connect(**db_config)
     cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    if cursor.fetchone():
-        cursor.close()
-        conn.close()
-        return jsonify({"error": "Email already in use"}), 400
-
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     cursor.execute(
-        "INSERT INTO users (firstname, lastname, email, password, role) VALUES (%s, %s, %s, %s, %s)",
-        (firstname, lastname, email, hashed_password.decode("utf-8"), role)
+        "UPDATE users SET firstname=%s, lastname=%s, role=%s WHERE id=%s",
+        (firstname, lastname, role, user_id)
     )
     conn.commit()
-    user_id = cursor.lastrowid   # ✅ capture inserted user_id
     cursor.close()
     conn.close()
 
-    token = generate_token(user_id, email, role)  # ✅ now includes id
-    return jsonify({"message": "Signup successful", "token": token}), 200
+    return jsonify({"message": "Utilisateur mis à jour avec succès"}), 200
 
 
-@app.route("/auth/login", methods=["POST"])
-def login():
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
-
-    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+@app.route("/users/<int:user_id>", methods=["DELETE"])
+@token_required
+def delete_user(user_id):
+    """🗑 Supprimer un utilisateur"""
+    conn = pymysql.connect(**db_config)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    user = cursor.fetchone()
+    cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+    conn.commit()
     cursor.close()
     conn.close()
+    return jsonify({"message": "Utilisateur supprimé avec succès"}), 200
 
-    if not user:
-        return jsonify({"error": "User not found"}), 404
 
-    if bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        token = generate_token(user["id"], user["email"], user["role"])  # ✅ pass id
-        return jsonify({
-            "message": "Login successful",
-            "token": token,
-            "user": {
-                "id": user["id"],
-                "firstname": user["firstname"],
-                "lastname": user["lastname"],
-                "email": user["email"],
-                "role": user["role"]
-            }
-        }), 200
-    else:
-        return jsonify({"error": "Invalid password"}), 401
+
 
 
 
