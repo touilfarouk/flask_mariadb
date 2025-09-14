@@ -75,3 +75,57 @@ def login():
         }), 200
     else:
         return jsonify({"error": "Invalid password"}), 401
+
+
+
+@auth_bp.route("/users", methods=["GET"])
+@token_required
+def get_users():
+    """📋 Récupérer tous les utilisateurs"""
+    conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, firstname, lastname, email, role FROM users")
+    users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify({"data": users}), 200
+
+
+@auth_bp.route("/users/<int:user_id>", methods=["PUT"])
+@token_required
+def update_user(user_id):
+    """✏ Mettre à jour un utilisateur"""
+    data = request.json
+    firstname = data.get("firstname")
+    lastname = data.get("lastname")
+    role = data.get("role")
+
+    if not firstname or not lastname or not role:
+        return jsonify({"error": "firstname, lastname et role requis"}), 400
+
+    conn = pymysql.connect(**db_config)
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE users SET firstname=%s, lastname=%s, role=%s WHERE id=%s",
+        (firstname, lastname, role, user_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"message": "Utilisateur mis à jour avec succès"}), 200
+
+
+@auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@token_required
+def delete_user(user_id):
+    """🗑 Supprimer un utilisateur"""
+    conn = pymysql.connect(**db_config)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({"message": "Utilisateur supprimé avec succès"}), 200
+
+
