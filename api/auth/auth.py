@@ -10,6 +10,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth_bp.route("/signup", methods=["POST"])
+@token_required
 def signup():
     data = request.json
     firstname = data.get("firstname")
