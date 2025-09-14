@@ -4,9 +4,10 @@ from functools import wraps
 from flask import request, jsonify
 from config import SECRET_KEY
 
-# Generate JWT token
-def generate_token(email, role):
+# ✅ Generate JWT token including user_id
+def generate_token(user_id, email, role):
     payload = {
+        "id": user_id,   # 👈 add user_id from DB
         "email": email,
         "role": role,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
@@ -28,7 +29,7 @@ def token_required(f):
         token = parts[1]
         try:
             decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            request.user = decoded
+            request.user = decoded  # 👈 now contains id, email, role
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Token expired"}), 401
         except jwt.InvalidTokenError:

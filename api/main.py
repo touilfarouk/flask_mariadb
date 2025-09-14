@@ -48,10 +48,11 @@ def signup():
         (firstname, lastname, email, hashed_password.decode("utf-8"), role)
     )
     conn.commit()
+    user_id = cursor.lastrowid   # ✅ capture inserted user_id
     cursor.close()
     conn.close()
 
-    token = generate_token(email, role)
+    token = generate_token(user_id, email, role)  # ✅ now includes id
     return jsonify({"message": "Signup successful", "token": token}), 200
 
 
@@ -61,7 +62,6 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    # utiliser DictCursor pour accéder par clés
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
@@ -72,9 +72,8 @@ def login():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # ici password est string (du form), user['password'] est bytes (stocké en DB)
     if bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        token = generate_token(user['email'], user['role'])
+        token = generate_token(user["id"], user["email"], user["role"])  # ✅ pass id
         return jsonify({
             "message": "Login successful",
             "token": token,
@@ -91,15 +90,16 @@ def login():
 
 
 
+
 @app.route("/protected", methods=["GET"])
 @token_required
 def protected():
     return jsonify({
+        "id": request.user['id'],
         "email": request.user['email'],
         "role": request.user['role'],
         "message": "Welcome to the protected route!"
     }), 200
-
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=3000, debug=True)
