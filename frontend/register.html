@@ -5,7 +5,7 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Register - Personnel Management</title>
+  <title>Inscription - Gestion du personnel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
@@ -18,8 +18,8 @@
       <div class="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
         <i class="fas fa-user-plus text-2xl text-green-600"></i>
       </div>
-      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Personnel System</h1>
-      <p class="text-gray-600 dark:text-gray-400 mt-2">Create New Account</p>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Système du personnel</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Créer un nouveau compte</p>
     </div>
 
     <!-- Register Card -->
@@ -27,16 +27,16 @@
       <div class="text-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
           <i class="fas fa-user-plus text-green-600 mr-2"></i>
-          Register
+          Inscription
         </h2>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Create your account</p>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Créez votre compte</p>
       </div>
       
       <form id="signupForm" class="form-compact">
         <div class="form-group">
           <label for="firstname">
             <i class="fas fa-user mr-1"></i>
-            First Name
+            Prénom
           </label>
           <input type="text" id="firstname" placeholder="John" required>
         </div>
@@ -44,7 +44,7 @@
         <div class="form-group">
           <label for="lastname">
             <i class="fas fa-user mr-1"></i>
-            Last Name
+            Nom
           </label>
           <input type="text" id="lastname" placeholder="Doe" required>
         </div>
@@ -52,7 +52,7 @@
         <div class="form-group">
           <label for="email">
             <i class="fas fa-envelope mr-1"></i>
-            Email Address
+            Adresse e-mail
           </label>
           <input type="email" id="email" placeholder="john.doe@example.com" required>
         </div>
@@ -60,26 +60,26 @@
         <div class="form-group">
           <label for="password">
             <i class="fas fa-lock mr-1"></i>
-            Password
+            Mot de passe
           </label>
-          <input type="password" id="password" placeholder="Enter password" required>
+          <input type="password" id="password" placeholder="Entrez un mot de passe" required>
         </div>
         
         <div class="form-group">
           <label for="role">
             <i class="fas fa-shield-alt mr-1"></i>
-            Role
+            Rôle
           </label>
           <select id="role" required>
-            <option value="">Select Role</option>
-            <option value="user">User</option>
-            <option value="admin">Administrator</option>
+            <option value="">Sélectionnez un rôle</option>
+            <option value="user">Utilisateur</option>
+            <option value="admin">Administrateur</option>
           </select>
         </div>
         
         <button type="submit" class="btn btn-success w-full">
           <i class="fas fa-user-plus mr-2"></i>
-          Create Account
+          Créer un compte
         </button>
       </form>
       
@@ -87,9 +87,9 @@
       
       <div class="mt-6 text-center">
         <p class="text-sm text-gray-600 dark:text-gray-400">
-          Already have an account? 
+          Vous avez déjà un compte ? 
           <a href="login.html" class="text-blue-600 hover:text-blue-700 font-medium">
-            Sign in here
+            Connectez-vous ici
           </a>
         </p>
       </div>
@@ -98,13 +98,13 @@
     <!-- Footer -->
     <div class="text-center mt-8">
       <p class="text-xs text-gray-500 dark:text-gray-400">
-        © 2024 Personnel Management System. All rights reserved.
+        © 2024 Système de gestion du personnel. Tous droits réservés.
       </p>
     </div>
   </div>
 
   <!-- Theme Toggle Button -->
-  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+  <button class="theme-toggle" @click="dark = !dark" title="Changer le thème">
     <i class="fas fa-sun sun-icon"></i>
     <i class="fas fa-moon moon-icon"></i>
   </button>

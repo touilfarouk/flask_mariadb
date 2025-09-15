@@ -5,7 +5,7 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Section Management</title>
+  <title>Gestion des sections</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
@@ -15,13 +15,13 @@
   <!-- Professional Sidebar -->
   <aside class="sidebar-modern">
     <div class="sidebar-header">
-      <h1 class="sidebar-title">Personnel System</h1>
-      <p class="sidebar-subtitle">Management Dashboard</p>
+      <h1 class="sidebar-title">Système du personnel</h1>
+      <p class="sidebar-subtitle">Tableau de bord</p>
     </div>
     <nav class="sidebar-nav">
       <a href="index.html" class="nav-item">
         <i class="fas fa-home"></i>
-        Dashboard
+        Tableau de bord
       </a>
       <a href="personnel.html" class="nav-item">
         <i class="fas fa-users"></i>
@@ -33,7 +33,7 @@
       </a>
       <a href="#" id="logoutLink" class="nav-item">
         <i class="fas fa-sign-out-alt"></i>
-        Logout
+        Déconnexion
       </a>
     </nav>
   </aside>
@@ -46,9 +46,9 @@
     <div class="page-header">
       <h1 class="page-title">
         <i class="fas fa-building text-green-600 mr-3"></i>
-        Section Management
+        Gestion des sections
       </h1>
-      <p class="page-subtitle">Manage organizational sections and departments</p>
+      <p class="page-subtitle">Gérez les sections et départements</p>
     </div>
 
     <!-- Content Grid -->
@@ -59,20 +59,20 @@
           <div class="card-header">
             <h3 class="card-title">
               <i class="fas fa-plus-circle text-green-600 mr-2"></i>
-              Add Section
+              Ajouter une section
             </h3>
           </div>
           <form id="sectionForm" class="form-compact">
             <div class="form-group">
-              <label for="code_section">Section Code</label>
+              <label for="code_section">Code section</label>
               <input id="code_section" type="number" placeholder="100" required>
             </div>
             <div class="form-group">
-              <label for="label">Section Name</label>
+              <label for="label">Nom de la section</label>
               <input id="label" type="text" placeholder="Human Resources" required>
             </div>
             <div class="form-group">
-              <label for="unit">Unit</label>
+              <label for="unit">Unité</label>
               <input id="unit" type="text" placeholder="HR" required>
             </div>
             <div class="form-group">
@@ -81,7 +81,7 @@
             </div>
             <button id="formBtn" type="submit" class="btn btn-success w-full">
               <i class="fas fa-plus mr-1"></i>
-              Add Section
+              Ajouter une section
             </button>
           </form>
         </div>
@@ -93,7 +93,7 @@
           <div class="card-header">
             <h3 class="card-title">
               <i class="fas fa-list text-blue-600 mr-2"></i>
-              Sections List
+              Liste des sections
             </h3>
           </div>
           <div class="overflow-x-auto">
@@ -101,9 +101,9 @@
               <thead>
                 <tr>
                   <th>Code</th>
-                  <th>Name</th>
+                  <th>Nom</th>
                   <th>Type</th>
-                  <th>Unit</th>
+                  <th>Unité</th>
                   <th>Personnel</th>
                   <th>Actions</th>
                 </tr>
@@ -121,7 +121,7 @@
   <!-- Scripts -->
     <script type="module" src="./js/protected.js"></script>
   <!-- Theme Toggle Button -->
-  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+  <button class="theme-toggle" @click="dark = !dark" title="Changer le thème">
     <i class="fas fa-sun sun-icon"></i>
     <i class="fas fa-moon moon-icon"></i>
   </button>

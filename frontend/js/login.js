@@ -22,16 +22,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const res = await api.post("/auth/login", payload);
 
     if (!res.ok) {
-      showNotification(notify, "❌ " + res.error, "error");
+      showNotification(notify, "❌ " + (res.error || "Échec de la connexion"), "error");
       return;
     }
 
     if (res.token) {
       localStorage.setItem("token", res.token);
-      showNotification(notify, "✅ Login successful, redirecting...", "success");
+      showNotification(notify, "✅ Connexion réussie, redirection...", "success");
       setTimeout(() => (window.location.href = "index.html"), 1000);
     } else {
-      showNotification(notify, "❌ No token received", "error");
+      showNotification(notify, "❌ Aucun jeton reçu", "error");
     }
   });
 });

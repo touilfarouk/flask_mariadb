@@ -5,7 +5,7 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Personnel Management</title>
+  <title>Gestion du personnel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
@@ -15,13 +15,13 @@
   <!-- Professional Sidebar -->
   <aside class="sidebar-modern">
     <div class="sidebar-header">
-      <h1 class="sidebar-title">Personnel System</h1>
-      <p class="sidebar-subtitle">Management Dashboard</p>
+      <h1 class="sidebar-title">Système du personnel</h1>
+      <p class="sidebar-subtitle">Tableau de bord</p>
     </div>
     <nav class="sidebar-nav">
       <a href="index.html" class="nav-item">
         <i class="fas fa-home"></i>
-        Dashboard
+        Tableau de bord
       </a>
       <a href="personnel.html" class="nav-item active">
         <i class="fas fa-users"></i>
@@ -33,7 +33,7 @@
       </a>
       <a href="#" id="logoutLink" class="nav-item">
         <i class="fas fa-sign-out-alt"></i>
-        Logout
+        Déconnexion
       </a>
     </nav>
   </aside>
@@ -46,9 +46,9 @@
     <div class="page-header">
       <h1 class="page-title">
         <i class="fas fa-users text-blue-600 mr-3"></i>
-        Personnel Management
+        Gestion du personnel
       </h1>
-      <p class="page-subtitle">Manage employee records and assignments</p>
+      <p class="page-subtitle">Gérez les dossiers et affectations des employés</p>
     </div>
 
     <!-- Content Grid -->
@@ -59,16 +59,16 @@
           <div class="card-header">
             <h3 class="card-title">
               <i class="fas fa-user-plus text-green-600 mr-2"></i>
-              Add Personnel
+              Ajouter un personnel
             </h3>
           </div>
           <form id="personnelForm" class="form-compact">
             <div class="form-group">
-              <label for="matricule">Employee ID</label>
+              <label for="matricule">Matricule</label>
               <input id="matricule" type="text" placeholder="EMP001" required>
             </div>
             <div class="form-group">
-              <label for="nom">Full Name</label>
+              <label for="nom">Nom complet</label>
               <input id="nom" type="text" placeholder="John Doe" required>
             </div>
             <div class="form-group">
@@ -76,11 +76,11 @@
               <input id="qualification" type="text" placeholder="Manager" required>
             </div>
             <div class="form-group">
-              <label for="affectation">Department</label>
+              <label for="affectation">Département</label>
               <input id="affectation" type="text" placeholder="IT Department" required>
             </div>
             <div class="form-group">
-              <label for="sectionSelect">Assigned Sections</label>
+              <label for="sectionSelect">Sections assignées</label>
               <select id="sectionSelect" multiple size="4">
                 <!-- Options loaded dynamically -->
               </select>
@@ -88,7 +88,7 @@
             <input type="hidden" id="personnelId" value="">
             <button type="submit" id="submitPersonnel" data-mode="add" class="btn btn-success w-full">
               <i class="fas fa-plus mr-1"></i>
-              Add Personnel
+              Ajouter un personnel
             </button>
           </form>
         </div>
@@ -100,7 +100,7 @@
           <div class="card-header">
             <h3 class="card-title">
               <i class="fas fa-list text-blue-600 mr-2"></i>
-              Personnel List
+              Liste du personnel
             </h3>
           </div>
           <div class="overflow-x-auto">
@@ -108,9 +108,9 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
+                  <th>Nom</th>
                   <th>Qualification</th>
-                  <th>Department</th>
+                  <th>Département</th>
                   <th>Sections</th>
                   <th>Actions</th>
                 </tr>
@@ -128,7 +128,7 @@
   <!-- Scripts -->
   <script type="module" src="./js/protected.js"></script>
   <!-- Theme Toggle Button -->
-  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+  <button class="theme-toggle" @click="dark = !dark" title="Changer le thème">
     <i class="fas fa-sun sun-icon"></i>
     <i class="fas fa-moon moon-icon"></i>
   </button>

@@ -5,7 +5,7 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Personnel Management Dashboard</title>
+  <title>Tableau de bord de gestion du personnel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
@@ -15,13 +15,13 @@
   <!-- Professional Sidebar -->
   <aside class="sidebar-modern">
     <div class="sidebar-header">
-      <h1 class="sidebar-title">Personnel System</h1>
-      <p class="sidebar-subtitle">Management Dashboard</p>
+      <h1 class="sidebar-title">Système du personnel</h1>
+      <p class="sidebar-subtitle">Tableau de bord</p>
     </div>
     <nav class="sidebar-nav">
       <a href="index.html" class="nav-item active">
         <i class="fas fa-home"></i>
-        Dashboard
+        Tableau de bord
       </a>
       <a href="personnel.html" class="nav-item">
         <i class="fas fa-users"></i>
@@ -33,7 +33,7 @@
       </a>
       <a href="#" id="logoutLink" class="nav-item">
         <i class="fas fa-sign-out-alt"></i>
-        Logout
+        Déconnexion
       </a>
     </nav>
   </aside>
@@ -44,9 +44,9 @@
     <div class="page-header">
       <h1 class="page-title">
         <i class="fas fa-tachometer-alt text-blue-600 mr-3"></i>
-        Dashboard
+        Tableau de bord
       </h1>
-      <p class="page-subtitle">Welcome to Personnel Management System</p>
+      <p class="page-subtitle">Bienvenue dans le système de gestion du personnel</p>
     </div>
 
     <!-- Dashboard Cards -->
@@ -57,7 +57,7 @@
           <div>
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Personnel</h3>
             <p class="text-2xl font-bold text-blue-600" id="personnelCount">-</p>
-            <p class="text-sm text-gray-500">Total Employees</p>
+            <p class="text-sm text-gray-500">Employés au total</p>
           </div>
           <div class="bg-blue-100 p-3 rounded-full">
             <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -71,7 +71,7 @@
           <div>
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Sections</h3>
             <p class="text-2xl font-bold text-green-600" id="sectionCount">-</p>
-            <p class="text-sm text-gray-500">Active Departments</p>
+            <p class="text-sm text-gray-500">Départements actifs</p>
           </div>
           <div class="bg-green-100 p-3 rounded-full">
             <i class="fas fa-building text-green-600 text-xl"></i>
@@ -83,15 +83,15 @@
       <div class="card">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Quick Actions</h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Actions rapides</h3>
             <div class="mt-3 space-y-2">
               <a href="personnel.html" class="btn btn-primary btn-sm w-full">
                 <i class="fas fa-user-plus mr-1"></i>
-                Add Personnel
+                Ajouter un personnel
               </a>
               <a href="section.html" class="btn btn-success btn-sm w-full">
                 <i class="fas fa-plus mr-1"></i>
-                Add Section
+                Ajouter une section
               </a>
             </div>
           </div>
@@ -104,24 +104,24 @@
       <div class="card-header">
         <h3 class="card-title">
           <i class="fas fa-clock text-orange-600 mr-2"></i>
-          System Status
+          État du système
         </h3>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">System Information</h4>
+          <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Informations système</h4>
           <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Database Connected</li>
-            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Authentication Active</li>
-            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>All Services Running</li>
+            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Base de données connectée</li>
+            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Authentification active</li>
+            <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Tous les services en cours d'exécution</li>
           </ul>
         </div>
         <div>
-          <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Features Available</h4>
+          <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">Fonctionnalités disponibles</h4>
           <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Personnel Management</li>
-            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Section Management</li>
-            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Role-based Access Control</li>
+            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Gestion du personnel</li>
+            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Gestion des sections</li>
+            <li><i class="fas fa-cog text-blue-500 mr-2"></i>Contrôle d'accès basé sur les rôles</li>
           </ul>
         </div>
       </div>
@@ -129,7 +129,7 @@
   </main>
 
   <!-- Theme Toggle Button -->
-  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+  <button class="theme-toggle" @click="dark = !dark" title="Changer le thème">
     <i class="fas fa-sun sun-icon"></i>
     <i class="fas fa-moon moon-icon"></i>
   </button>

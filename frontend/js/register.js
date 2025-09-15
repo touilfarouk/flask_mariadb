@@ -23,25 +23,25 @@ document.addEventListener("DOMContentLoaded", () => {
       role: document.querySelector("#role").value || "user",
     };
 
-    // Validate required fields
+    // Validation des champs requis
     if (!payload.firstname || !payload.lastname || !payload.email || !payload.password || !payload.role) {
-      showNotification(notify, "❌ All fields are required", "error");
+      showNotification(notify, "❌ Tous les champs sont obligatoires", "error");
       return;
     }
 
     const res = await api.post("/auth/signup", payload);
 
     if (!res.ok) {
-      showNotification(notify, "❌ " + res.error, "error");
+      showNotification(notify, "❌ " + (res.error || "Échec de l'inscription"), "error");
       return;
     }
 
     if (res.token) {
       localStorage.setItem("token", res.token);
-      showNotification(notify, "✅ Registration successful! Redirecting...", "success");
+      showNotification(notify, "✅ Inscription réussie ! Redirection...", "success");
       setTimeout(() => (window.location.href = "index.html"), 1500);
     } else {
-      showNotification(notify, "❌ Registration failed", "error");
+      showNotification(notify, "❌ Échec de l'inscription", "error");
     }
   });
 });

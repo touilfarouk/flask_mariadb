@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         </a>
         <a href="register.html" 
            class="flex items-center gap-3 p-3 rounded-lg text-purple-600 dark:text-purple-400 font-medium hover:bg-purple-100 dark:hover:bg-gray-700">
-          📝 <span>Register</span>
+          📝 <span>Inscription</span>
         </a>
         <a href="#" id="logoutLink"
            class="flex items-center gap-3 p-3 rounded-lg text-red-600 dark:text-red-400 font-medium hover:bg-red-100 dark:hover:bg-gray-700">
-          🚪 <span>Logout</span>
+          🚪 <span>Déconnexion</span>
         </a>
       </nav>
       <footer class="p-4 text-sm text-gray-500 dark:text-gray-400">
