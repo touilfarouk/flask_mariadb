@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import pymysql
 from config import db_config
-from utils.auth import token_required
+from utils.auth import token_required, roles_required
 section_bp = Blueprint("section", __name__, url_prefix="/section")
 
 # ✅ Get all sections (with personnel)
@@ -11,7 +11,7 @@ def get_sections():
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()
     cur.execute("""
-        SELECT s.id, s.label, s.type, s.unit,
+        SELECT s.id, s.code_section, s.label, s.type, s.unit,
                GROUP_CONCAT(p.nom SEPARATOR ', ') AS personnels
         FROM section s
         LEFT JOIN personnel_section ps ON s.id = ps.section_id
@@ -28,21 +28,23 @@ def get_sections():
 # ✅ Add section (with optional personnel links)
 @section_bp.route("/add", methods=["POST"])
 @token_required
+@roles_required(["admin"])
 def add_section():
     data = request.json
+    code_section = data.get("code_section")
     label = data.get("label")
     unit = data.get("unit")
     type = data.get("type")
     personnel_ids = data.get("personnels", [])  # expect list of IDs
 
-    if not label or not unit or not type:
-        return jsonify({"error": "Label, Unit, and Type are required"}), 400
+    if not code_section or not label or not unit or not type:
+        return jsonify({"error": "Code Section, Label, Unit, and Type are required"}), 400
 
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO section (label, unit, type) VALUES (%s, %s, %s)",
-        (label, unit, type)
+        "INSERT INTO section (code_section, label, unit, type) VALUES (%s, %s, %s, %s)",
+        (code_section, label, unit, type)
     )
     new_id = cur.lastrowid
 
@@ -63,22 +65,24 @@ def add_section():
 # ✅ Update section (and reassign personnel)
 @section_bp.route("/update/<int:section_id>", methods=["PUT"])
 @token_required
+@roles_required(["admin"])
 def update_section(section_id):
     data = request.json
+    code_section = data.get("code_section")
     label = data.get("label")
     unit = data.get("unit")
     type = data.get("type")
     personnel_ids = data.get("personnels", [])
 
-    if not label or not unit or not type:
-        return jsonify({"error": "Label, Unit, and Type are required"}), 400
+    if not code_section or not label or not unit or not type:
+        return jsonify({"error": "Code Section, Label, Unit, and Type are required"}), 400
 
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()
 
     cur.execute(
-        "UPDATE section SET label=%s, unit=%s, type=%s WHERE id=%s",
-        (label, unit, type, section_id)
+        "UPDATE section SET code_section=%s, label=%s, unit=%s, type=%s WHERE id=%s",
+        (code_section, label, unit, type, section_id)
     )
 
     if cur.rowcount == 0:
@@ -104,6 +108,7 @@ def update_section(section_id):
 # ✅ Delete section (links auto-removed by ON DELETE CASCADE)
 @section_bp.route("/delete/<int:section_id>", methods=["DELETE"])
 @token_required
+@roles_required(["admin"])
 def delete_section(section_id):
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
     cur = conn.cursor()

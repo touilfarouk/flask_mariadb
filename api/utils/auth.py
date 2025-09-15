@@ -37,3 +37,28 @@ def token_required(f):
 
         return f(*args, **kwargs)
     return decorated
+
+
+# Role-based authorization decorator
+def roles_required(allowed_roles):
+    """
+    Ensure the authenticated user has one of the allowed roles.
+
+    Usage:
+        @app.route('/admin')
+        @token_required
+        @roles_required(['admin'])
+        def admin_only():
+            ...
+    """
+    def wrapper(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            user = getattr(request, 'user', None)
+            if not user or 'role' not in user:
+                return jsonify({"error": "Unauthorized"}), 401
+            if user['role'] not in allowed_roles:
+                return jsonify({"error": "Forbidden: insufficient role"}), 403
+            return f(*args, **kwargs)
+        return decorated
+    return wrapper

@@ -2,12 +2,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymysql
 import bcrypt
-from config import db_config
+from config import db_config, SECRET_KEY
 from utils.auth import generate_token, token_required
 from section.section import section_bp
 from personnel.personnel import personnel_bp
 from auth.auth import auth_bp
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = SECRET_KEY
 CORS(app)
 
 # ✅ No SECRET_KEY here, we now keep it in config.py

@@ -3,14 +3,13 @@ from flask_cors import CORS
 import pymysql
 import bcrypt
 from config import db_config
-from utils.auth import generate_token, token_required
+from utils.auth import generate_token, token_required, roles_required
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 
 @auth_bp.route("/signup", methods=["POST"])
-@token_required
 def signup():
     data = request.json
     firstname = data.get("firstname")
@@ -61,8 +60,15 @@ def login():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        token = generate_token(user["id"], user["email"], user["role"])  # ✅ pass id
+    # Ensure stored hash is bytes when verifying (support both str/bytes from DB)
+    stored_hash = user.get('password')
+    if isinstance(stored_hash, str):
+        stored_hash = stored_hash.encode('utf-8')
+
+    role_value = user.get("role", "customer")
+
+    if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
+        token = generate_token(user["id"], user["email"], role_value)  # ✅ pass id
         return jsonify({
             "message": "Login successful",
             "token": token,
@@ -71,7 +77,7 @@ def login():
                 "firstname": user["firstname"],
                 "lastname": user["lastname"],
                 "email": user["email"],
-                "role": user["role"]
+                "role": role_value
             }
         }), 200
     else:
@@ -81,6 +87,7 @@ def login():
 
 @auth_bp.route("/users", methods=["GET"])
 @token_required
+@roles_required(["admin"])
 def get_users():
     """📋 Récupérer tous les utilisateurs"""
     conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
@@ -94,6 +101,7 @@ def get_users():
 
 @auth_bp.route("/users/<int:user_id>", methods=["PUT"])
 @token_required
+@roles_required(["admin"])
 def update_user(user_id):
     """✏ Mettre à jour un utilisateur"""
     data = request.json
@@ -119,6 +127,7 @@ def update_user(user_id):
 
 @auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
 @token_required
+@roles_required(["admin"])
 def delete_user(user_id):
     """🗑 Supprimer un utilisateur"""
     conn = pymysql.connect(**db_config)

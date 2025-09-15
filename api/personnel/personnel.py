@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, send_file
 import pymysql
 import io
 from datetime import datetime
-from utils.auth import token_required
+from utils.auth import token_required, roles_required
 #import pandas as pd  # keep for Excel import/export
 from config import db_config
 
@@ -65,6 +65,7 @@ def get_personnel_by_id(personnel_id):
 # ✅ Add new personnel with sections
 @personnel_bp.route("/add", methods=["POST"])
 @token_required
+@roles_required(["admin"])
 def add_personnel():
     try:
         data = request.json
@@ -108,6 +109,7 @@ def add_personnel():
 # ✅ Update personnel and sections
 @personnel_bp.route("/<int:personnel_id>", methods=["PUT"])
 @token_required
+@roles_required(["admin"])
 def update_personnel(personnel_id):
     try:
         data = request.json or {}
@@ -161,6 +163,7 @@ def update_personnel(personnel_id):
 # ✅ Delete personnel
 @personnel_bp.route("/<int:personnel_id>", methods=["DELETE"])
 @token_required
+@roles_required(["admin"])
 def delete_personnel(personnel_id):
     try:
         conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
