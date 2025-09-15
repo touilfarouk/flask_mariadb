@@ -3,12 +3,12 @@ import { api } from "./api.js";
 document.addEventListener("DOMContentLoaded", () => {
   // Si déjà connecté
   if (localStorage.getItem("token")) {
-    window.location.href = "";
+    window.location.href = "index.html";
     return;
   }
 
   const form = document.querySelector("#loginForm");
-  const notify = document.querySelector("#notification");
+  const notify = document.querySelector("#message");
   if (!form) return;
 
   form.addEventListener("submit", async (e) => {

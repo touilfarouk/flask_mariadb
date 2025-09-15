@@ -2,7 +2,7 @@ import { api } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const currentPage = window.location.pathname.split("/").pop();
-  const unprotectedPages = ["login.html", "index.html"];
+  const unprotectedPages = ["login.html"];
 
   // 🚨 Protection automatique
   const token = localStorage.getItem("token");

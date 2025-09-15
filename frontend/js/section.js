@@ -71,13 +71,29 @@ export const loadSections = async () => {
     // Bind Delete buttons
     document.querySelectorAll(".deleteBtn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const id = e.target.dataset.id;
+        console.log(`🎯 Delete button clicked for section ID: ${id}`);
+        
         if (confirm("Voulez-vous vraiment supprimer cette section ?")) {
           try {
-            await api.delete(`/section/delete/${id}`);
-            await loadSections();
+            console.log(`🔄 Calling API delete for section ${id}`);
+            const res = await api.delete(`/section/delete/${id}`);
+            console.log(`📊 Delete response:`, res);
+            
+            if (res.ok) {
+              console.log(`✅ Section delete successful`);
+              alert("✅ Section supprimée avec succès");
+              await loadSections();
+            } else {
+              console.error(`❌ Section delete failed:`, res.error);
+              alert("❌ Erreur: " + res.error);
+            }
           } catch (err) {
-            console.error("Erreur lors de la suppression:", err);
+            console.error("❌ Erreur lors de la suppression:", err);
+            alert("❌ Erreur lors de la suppression: " + err.message);
           }
         }
       });

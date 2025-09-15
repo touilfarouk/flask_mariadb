@@ -5,102 +5,134 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Gestion du Personnel</title>
+  <title>Personnel Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 flex h-screen text-gray-900 dark:text-gray-100">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-lg h-full flex flex-col"></aside>
+<body class="bg-gray-50 dark:bg-gray-900">
+  <!-- Professional Sidebar -->
+  <aside class="sidebar-modern">
+    <div class="sidebar-header">
+      <h1 class="sidebar-title">Personnel System</h1>
+      <p class="sidebar-subtitle">Management Dashboard</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i>
+        Dashboard
+      </a>
+      <a href="personnel.html" class="nav-item active">
+        <i class="fas fa-users"></i>
+        Personnel
+      </a>
+      <a href="section.html" class="nav-item">
+        <i class="fas fa-building"></i>
+        Sections
+      </a>
+      <a href="#" id="logoutLink" class="nav-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </nav>
+  </aside>
 
   
 
- <!-- Contenu principal -->
-<main class="flex-1 p-8 overflow-y-auto">
-  <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-6">👨‍💼 Gestion du Personnel</h2>
-
-  <!-- Conteneur horizontal -->
-  <div class="flex flex-col lg:flex-row gap-6">
-    <!-- Formulaire (gauche) -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded p-6 mb-6 lg:mb-0 lg:w-1/5">
-      <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-4">Ajouter un Personnel</h3>
-     <form id="personnelForm" class="space-y-3">
-  <input id="matricule" type="number" placeholder="Matricule" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-  <input id="nom" type="text" placeholder="Nom complet" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-  <input id="qualification" type="text" placeholder="Qualification" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-  <input id="affectation" type="text" placeholder="Affectation" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-
-  <label class="block font-medium text-gray-700 dark:text-gray-300">Sections</label>
-  <select id="sectionSelect" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" multiple></select>
-
-  <input type="hidden" id="personnelId" value="">
-  <button type="submit" id="submitPersonnel" data-mode="add" class="bg-green-600 text-white px-3 py-1 rounded">
-    ✅ Ajouter
-  </button>
-</form>
-
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-users text-blue-600 mr-3"></i>
+        Personnel Management
+      </h1>
+      <p class="page-subtitle">Manage employee records and assignments</p>
     </div>
 
-    <!-- Tableau (droite) -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded p-6 flex-1 overflow-auto">
-      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-100 mb-4">Liste du Personnel</h3>
-      <div class="overflow-x-auto">
-       <!-- Table -->
-      <table class="w-full border border-gray-300 text-sm">
-        <thead class="bg-gray-800 text-white dark:bg-gray-700 dark:text-gray-100">
-          <tr>
-            <th class="p-2 border border-gray-400 text-center">Matricule</th>
-            <th class="p-2 border border-gray-400 text-center">Nom</th>
-            <th class="p-2 border border-gray-400 text-center">Qualification</th>
-            <th class="p-2 border border-gray-400 text-center">Affectation</th>
-            <th class="p-2 border border-gray-400 text-center">Sections</th>
-            <th class="p-2 border border-gray-400 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="personnelTable" class="divide-y divide-gray-200 dark:divide-gray-600">
-          <!-- Exemple d’une ligne -->
-          <tr class="hover:bg-gray-100 dark:hover:bg-gray-800">
-        
-          </tr>
-        </tbody>
-      </table>
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Form Card -->
+      <div class="lg:col-span-1">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-user-plus text-green-600 mr-2"></i>
+              Add Personnel
+            </h3>
+          </div>
+          <form id="personnelForm" class="form-compact">
+            <div class="form-group">
+              <label for="matricule">Employee ID</label>
+              <input id="matricule" type="text" placeholder="EMP001" required>
+            </div>
+            <div class="form-group">
+              <label for="nom">Full Name</label>
+              <input id="nom" type="text" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label for="qualification">Qualification</label>
+              <input id="qualification" type="text" placeholder="Manager" required>
+            </div>
+            <div class="form-group">
+              <label for="affectation">Department</label>
+              <input id="affectation" type="text" placeholder="IT Department" required>
+            </div>
+            <div class="form-group">
+              <label for="sectionSelect">Assigned Sections</label>
+              <select id="sectionSelect" multiple size="4">
+                <!-- Options loaded dynamically -->
+              </select>
+            </div>
+            <input type="hidden" id="personnelId" value="">
+            <button type="submit" id="submitPersonnel" data-mode="add" class="btn btn-success w-full">
+              <i class="fas fa-plus mr-1"></i>
+              Add Personnel
+            </button>
+          </form>
+        </div>
+      </div>
 
-
-<!-- Modal édition -->
-<div id="editModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-    <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">✏️ Modifier un personnel</h2>
-    <form id="editForm" class="space-y-3">
-      <div>
-        <label class="block text-sm text-gray-700 dark:text-gray-300">Nom</label>
-        <input type="text" id="editNom" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required />
-      </div>
-      <div>
-        <label class="block text-sm text-gray-700 dark:text-gray-300">Qualification</label>
-        <input type="text" id="editQualification" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required />
-      </div>
-      <div>
-        <label class="block text-sm text-gray-700 dark:text-gray-300">Affectation</label>
-        <input type="text" id="editAffectation" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required />
-      </div>
-      <div class="flex justify-end gap-2 mt-4">
-        <button type="button" id="closeModal" class="px-3 py-1 bg-gray-400 text-white rounded">Annuler</button>
-        <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded">Enregistrer</button>
-      </div>
-    </form>
-  </div>
-</div>
-
+      <!-- Table Card -->
+      <div class="lg:col-span-3">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-list text-blue-600 mr-2"></i>
+              Personnel List
+            </h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="compact-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Qualification</th>
+                  <th>Department</th>
+                  <th>Sections</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="personnelTable">
+                <!-- Data loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</main>
-
+  </main>
 
   <!-- Scripts -->
-<script type="module" src="./js/protected.js"></script>
+  <script type="module" src="./js/protected.js"></script>
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+    <i class="fas fa-sun sun-icon"></i>
+    <i class="fas fa-moon moon-icon"></i>
+  </button>
+
   <script type="module" src="./js/personnel.js"></script>
-  
 </body>
 </html>

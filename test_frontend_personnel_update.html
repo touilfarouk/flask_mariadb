@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Personnel Section Update</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Test Personnel Section Update</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Section Assignment</h2>
+            <div id="results" class="space-y-2 mb-4"></div>
+            <button id="testUpdate" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Test Personnel Update with Sections
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Manual Test Form</h2>
+            <form id="testForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Personnel ID:</label>
+                    <input type="number" id="personnelId" class="w-full border rounded px-3 py-2" value="4">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Sections (comma separated IDs):</label>
+                    <input type="text" id="sectionIds" class="w-full border rounded px-3 py-2" value="1,3" placeholder="1,3,7">
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Update Personnel Sections
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // API wrapper
+        const API_BASE_URL = "http://127.0.0.1:3000";
+        
+        const api = {
+            get: async (url) => request("GET", url),
+            post: async (url, body) => request("POST", url, body),
+            put: async (url, body) => request("PUT", url, body),
+            delete: async (url) => request("DELETE", url),
+        };
+
+        async function request(method, url, body = null) {
+            try {
+                const token = localStorage.getItem("token");
+                
+                console.log(`🔍 API Request: ${method} ${url}`);
+                console.log(`🔑 Token exists: ${!!token}`);
+                
+                const res = await fetch(API_BASE_URL + url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: "Bearer " + token } : {})
+                    },
+                    body: body ? JSON.stringify(body) : null,
+                });
+
+                const data = await res.json().catch(() => ({}));
+                
+                console.log(`📊 Response: ${res.status} ${res.statusText}`, data);
+
+                if (!res.ok) {
+                    console.error(`❌ API Error: ${res.status} ${res.statusText}`, data);
+                    return { ok: false, error: data.error || res.statusText, status: res.status };
+                }
+
+                return { ok: true, ...data };
+            } catch (err) {
+                console.error("💥 API Request failed:", err);
+                return { ok: false, error: err.message };
+            }
+        }
+
+        // Login first
+        async function login() {
+            const loginRes = await api.post("/auth/login", {
+                email: "admin@example.com",
+                password: "admin123"
+            });
+            
+            if (loginRes.ok && loginRes.token) {
+                localStorage.setItem("token", loginRes.token);
+                console.log("✅ Login successful");
+                return true;
+            } else {
+                console.error("❌ Login failed:", loginRes.error);
+                return false;
+            }
+        }
+
+        async function testPersonnelUpdate() {
+            const results = document.getElementById("results");
+            results.innerHTML = "<p>Testing personnel section update...</p>";
+            
+            try {
+                // Step 1: Get existing personnel
+                console.log("🔍 Getting personnel list...");
+                const personnelRes = await api.get("/personnel/all");
+                
+                if (!personnelRes.ok) {
+                    results.innerHTML += `<p class="text-red-600">❌ Failed to get personnel: ${personnelRes.error}</p>`;
+                    return;
+                }
+                
+                const personnel = personnelRes.data || [];
+                if (personnel.length === 0) {
+                    results.innerHTML += `<p class="text-red-600">❌ No personnel found</p>`;
+                    return;
+                }
+                
+                const testPersonnel = personnel[0];
+                results.innerHTML += `<p class="text-green-600">✅ Found personnel: ${testPersonnel.nom} (ID: ${testPersonnel.id})</p>`;
+                
+                // Step 2: Get current personnel details
+                console.log(`🔍 Getting personnel ${testPersonnel.id} details...`);
+                const detailRes = await api.get(`/personnel/${testPersonnel.id}`);
+                
+                if (!detailRes.ok) {
+                    results.innerHTML += `<p class="text-red-600">❌ Failed to get personnel details: ${detailRes.error}</p>`;
+                    return;
+                }
+                
+                const personnelData = detailRes.data;
+                results.innerHTML += `<p class="text-blue-600">📋 Current data: ${JSON.stringify(personnelData)}</p>`;
+                
+                // Step 3: Update with sections
+                console.log(`🔄 Updating personnel ${testPersonnel.id} with sections...`);
+                const updateData = {
+                    matricule: personnelData.matricule,
+                    nom: personnelData.nom,
+                    qualification: personnelData.qualification,
+                    affectation: personnelData.affectation,
+                    sections: [1, 3] // Test with sections 1 and 3
+                };
+                
+                console.log("📋 Update payload:", updateData);
+                const updateRes = await api.put(`/personnel/${testPersonnel.id}`, updateData);
+                
+                if (updateRes.ok) {
+                    results.innerHTML += `<p class="text-green-600">✅ Update successful: ${updateRes.message}</p>`;
+                    
+                    // Verify the update
+                    const verifyRes = await api.get(`/personnel/${testPersonnel.id}/sections`);
+                    if (verifyRes.ok) {
+                        results.innerHTML += `<p class="text-green-600">✅ Verified sections: ${JSON.stringify(verifyRes.data)}</p>`;
+                    }
+                } else {
+                    results.innerHTML += `<p class="text-red-600">❌ Update failed: ${updateRes.error}</p>`;
+                }
+                
+            } catch (err) {
+                console.error("💥 Test error:", err);
+                results.innerHTML += `<p class="text-red-600">💥 Test error: ${err.message}</p>`;
+            }
+        }
+
+        // Manual form test
+        document.getElementById("testForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const personnelId = document.getElementById("personnelId").value;
+            const sectionIds = document.getElementById("sectionIds").value.split(",").map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            
+            console.log(`🎯 Manual test: Personnel ${personnelId}, Sections: ${sectionIds}`);
+            
+            try {
+                // Get current personnel data
+                const detailRes = await api.get(`/personnel/${personnelId}`);
+                if (!detailRes.ok) {
+                    alert(`Failed to get personnel ${personnelId}: ${detailRes.error}`);
+                    return;
+                }
+                
+                const personnelData = detailRes.data;
+                const updateData = {
+                    matricule: personnelData.matricule,
+                    nom: personnelData.nom,
+                    qualification: personnelData.qualification,
+                    affectation: personnelData.affectation,
+                    sections: sectionIds
+                };
+                
+                console.log("📋 Manual update payload:", updateData);
+                const updateRes = await api.put(`/personnel/${personnelId}`, updateData);
+                
+                if (updateRes.ok) {
+                    alert("✅ Update successful!");
+                } else {
+                    alert(`❌ Update failed: ${updateRes.error}`);
+                }
+                
+            } catch (err) {
+                console.error("💥 Manual test error:", err);
+                alert(`💥 Error: ${err.message}`);
+            }
+        });
+
+        // Auto test button
+        document.getElementById("testUpdate").addEventListener("click", testPersonnelUpdate);
+
+        // Initialize
+        async function init() {
+            const loggedIn = await login();
+            if (!loggedIn) {
+                document.getElementById("results").innerHTML = '<p class="text-red-600">❌ Login failed</p>';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

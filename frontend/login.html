@@ -1,29 +1,98 @@
-<!DOCTYPE html> 
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" 
+      x-data="{ dark: false }" 
+      x-init="dark = JSON.parse(localStorage.getItem('dark') || 'false')" 
+      x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Comptabilité Analytique</title>
+  <title>Login - Personnel Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
+  <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md">
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
+      <div class="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <i class="fas fa-users text-2xl text-blue-600"></i>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Personnel System</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Management Dashboard</p>
+    </div>
 
-  <div id="header"></div>
+    <!-- Login Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+          <i class="fas fa-sign-in-alt text-blue-600 mr-2"></i>
+          Sign In
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Access your dashboard</p>
+      </div>
+      
+      <form id="loginForm" class="form-compact">
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope mr-1"></i>
+            Email Address
+          </label>
+          <input type="email" id="email" placeholder="admin@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock mr-1"></i>
+            Password
+          </label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-full">
+          <i class="fas fa-sign-in-alt mr-2"></i>
+          Sign In
+        </button>
+      </form>
+      
+      <div id="message" class="mt-4 text-center"></div>
+      
+      <!-- Demo Credentials -->
+      <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          Demo Credentials
+        </h4>
+        <div class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+          <p><strong>Email:</strong> admin@example.com</p>
+          <p><strong>Password:</strong> admin123</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Need an account? 
+          <a href="register.html" class="text-blue-600 hover:text-blue-700 font-medium">
+            Register here
+          </a>
+        </p>
+      </div>
+    </div>
 
-  <div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-bold mb-4">Login</h2>
-    <form id="loginForm" class="space-y-4">
-      <input type="email" id="email" placeholder="Email" required class="w-full border px-3 py-2 rounded">
-      <input type="password" id="password" placeholder="Password" required class="w-full border px-3 py-2 rounded">
-      <button type="submit" class="w-full bg-cyan-600 text-white py-2 rounded hover:bg-cyan-700">Login</button>
-    </form>
-    <div id="notification" class="mt-3 font-semibold"></div>
+    <!-- Footer -->
+    <div class="text-center mt-8">
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        2024 Personnel Management System. All rights reserved.
+      </p>
+    </div>
   </div>
 
-  <div id="footer"></div>
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+    <i class="fas fa-sun sun-icon"></i>
+    <i class="fas fa-moon moon-icon"></i>
+  </button>
 
-  <!-- Scripts -->
-   <script src="./js/sidebar.js"></script>
   <script type="module" src="./js/login.js"></script>
 </body>
 </html>

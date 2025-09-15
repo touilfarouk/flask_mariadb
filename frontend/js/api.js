@@ -13,6 +13,13 @@ export const api = {
 async function request(method, url, body = null) {
   try {
     const token = localStorage.getItem("token");
+    
+    // Debug logging
+    console.log(`API Request: ${method} ${url}`);
+    console.log(`Token exists: ${!!token}`);
+    if (token) {
+      console.log(`Token preview: ${token.substring(0, 20)}...`);
+    }
 
     const res = await fetch(API_BASE_URL + url, {
       method,
@@ -26,11 +33,20 @@ async function request(method, url, body = null) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
+      console.error(`API Error: ${res.status} ${res.statusText}`, data);
+      // If unauthorized, clear token and redirect to login
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        if (window.location.pathname !== "/frontend/login.html") {
+          window.location.href = "login.html";
+        }
+      }
       return { ok: false, error: data.error || res.statusText };
     }
 
     return { ok: true, ...data };
   } catch (err) {
+    console.error("API Request failed:", err);
     return { ok: false, error: err.message };
   }
 }

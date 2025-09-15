@@ -5,62 +5,127 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Gestion des Sections</title>
+  <title>Section Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 flex h-screen text-gray-900 dark:text-gray-100">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-lg h-full flex flex-col"></aside>
-
-
-
-  <!-- Contenu principal -->
-  <main class="flex-1 p-8 overflow-y-auto">
-    <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-6">🏢 Gestion des Sections</h2>
-
-<!-- Conteneur horizontal -->
-<div class="flex flex-col lg:flex-row gap-6">
-  <!-- Formulaire (gauche) -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded p-6 mb-6 lg:mb-0 lg:w-1/5">
-    <h3 class="text-xl font-semibold text-green-600 dark:text-green-400 mb-4">Ajouter une Section</h3>
-    <form id="sectionForm" class="space-y-3">
-      <input id="code_section" type="number" placeholder="Code Section" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-      <input id="label" type="text" placeholder="Nom de la section" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-      <input id="unit" type="text" placeholder="Unité (ex: USD, DZD)" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-      <input id="type" type="text" placeholder="Type (Budget, RH...)" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-     <button id="formBtn" type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">➕ Ajouter</button>
-
-    </form>
-  </div>
-
-  <!-- Tableau (droite) -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded p-6 flex-1 overflow-auto">
-    <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-100 mb-4">Liste des Sections</h3>
-    <div class="overflow-x-auto">
-      <table class="w-full border text-sm dark:border-gray-700"> <!-- 👈 text-sm -->
-        <thead class="bg-gray-200 dark:bg-gray-700">
-          <tr>
-            <th class="p-1 border dark:border-gray-600">Code</th>
-            <th class="p-1 border dark:border-gray-600">Label</th>
-            <th class="p-1 border dark:border-gray-600">Type</th>
-            <th class="p-1 border dark:border-gray-600">Unité</th>
-            <th class="p-1 border dark:border-gray-600">Personnels</th>
-            <th class="p-1 border dark:border-gray-600">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="sectionTable" class="text-xs"></tbody> <!-- 👈 smaller text -->
-      </table>
-
+<body class="bg-gray-50 dark:bg-gray-900">
+  <!-- Professional Sidebar -->
+  <aside class="sidebar-modern">
+    <div class="sidebar-header">
+      <h1 class="sidebar-title">Personnel System</h1>
+      <p class="sidebar-subtitle">Management Dashboard</p>
     </div>
-  </div>
-</div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i>
+        Dashboard
+      </a>
+      <a href="personnel.html" class="nav-item">
+        <i class="fas fa-users"></i>
+        Personnel
+      </a>
+      <a href="section.html" class="nav-item active">
+        <i class="fas fa-building"></i>
+        Sections
+      </a>
+      <a href="#" id="logoutLink" class="nav-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </nav>
+  </aside>
 
+
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-building text-green-600 mr-3"></i>
+        Section Management
+      </h1>
+      <p class="page-subtitle">Manage organizational sections and departments</p>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Form Card -->
+      <div class="lg:col-span-1">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-plus-circle text-green-600 mr-2"></i>
+              Add Section
+            </h3>
+          </div>
+          <form id="sectionForm" class="form-compact">
+            <div class="form-group">
+              <label for="code_section">Section Code</label>
+              <input id="code_section" type="number" placeholder="100" required>
+            </div>
+            <div class="form-group">
+              <label for="label">Section Name</label>
+              <input id="label" type="text" placeholder="Human Resources" required>
+            </div>
+            <div class="form-group">
+              <label for="unit">Unit</label>
+              <input id="unit" type="text" placeholder="HR" required>
+            </div>
+            <div class="form-group">
+              <label for="type">Type</label>
+              <input id="type" type="text" placeholder="Administrative" required>
+            </div>
+            <button id="formBtn" type="submit" class="btn btn-success w-full">
+              <i class="fas fa-plus mr-1"></i>
+              Add Section
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="lg:col-span-3">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-list text-blue-600 mr-2"></i>
+              Sections List
+            </h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="compact-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Unit</th>
+                  <th>Personnel</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sectionTable">
+                <!-- Data loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Scripts -->
     <script type="module" src="./js/protected.js"></script>
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+    <i class="fas fa-sun sun-icon"></i>
+    <i class="fas fa-moon moon-icon"></i>
+  </button>
+
   <script type="module" src="./js/section.js"></script>
 </body>
 </html>

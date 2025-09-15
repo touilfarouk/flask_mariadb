@@ -62,6 +62,29 @@ def get_personnel_by_id(personnel_id):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+# ✅ Get section IDs for personnel
+@personnel_bp.route("/<int:personnel_id>/sections", methods=["GET"])
+@token_required
+def get_personnel_sections(personnel_id):
+    try:
+        conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT section_id 
+            FROM personnel_section 
+            WHERE personnel_id = %s
+        """, (personnel_id,))
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        section_ids = [row['section_id'] for row in rows]
+        return jsonify({"success": True, "data": section_ids}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 # ✅ Add new personnel with sections
 @personnel_bp.route("/add", methods=["POST"])
 @token_required
@@ -94,9 +117,25 @@ def add_personnel():
         """, (matricule, nom, qualification, affectation))
         new_id = cur.lastrowid
 
-        # Insert section links
-        for sid in section_ids:
-            cur.execute("INSERT INTO personnel_section (personnel_id, section_id) VALUES (%s, %s)", (new_id, sid))
+        # Insert section links with validation
+        if section_ids:
+            # Convert to integers and validate
+            try:
+                section_ids = [int(sid) for sid in section_ids if sid]
+            except (ValueError, TypeError):
+                cur.close()
+                conn.close()
+                return jsonify({"success": False, "error": "Invalid section ID format"}), 400
+                
+            for sid in section_ids:
+                # Validate section exists before inserting
+                cur.execute("SELECT id FROM section WHERE id = %s", (sid,))
+                if cur.fetchone():
+                    cur.execute("INSERT INTO personnel_section (personnel_id, section_id) VALUES (%s, %s)", (new_id, sid))
+                else:
+                    cur.close()
+                    conn.close()
+                    return jsonify({"success": False, "error": f"Section with ID {sid} not found"}), 400
 
         conn.commit()
         cur.close()
@@ -113,6 +152,9 @@ def add_personnel():
 def update_personnel(personnel_id):
     try:
         data = request.json or {}
+        print(f"DEBUG: Update request for personnel ID {personnel_id}")
+        print(f"DEBUG: Request data: {data}")
+        
         matricule = data.get("matricule")
         nom = data.get("nom")
         qualification = data.get("qualification")
@@ -125,12 +167,22 @@ def update_personnel(personnel_id):
         conn = pymysql.connect(**db_config, cursorclass=pymysql.cursors.DictCursor)
         cur = conn.cursor()
 
-        # Check duplicate matricule
-        cur.execute("SELECT id FROM personnel WHERE matricule = %s AND id != %s", (matricule, personnel_id))
-        if cur.fetchone():
+        # Check if personnel exists first
+        cur.execute("SELECT matricule FROM personnel WHERE id = %s", (personnel_id,))
+        current_personnel = cur.fetchone()
+        
+        if not current_personnel:
             cur.close()
             conn.close()
-            return jsonify({"success": False, "error": "Ce matricule existe déjà"}), 400
+            return jsonify({"success": False, "error": "Personnel non trouvé"}), 404
+
+        # Check duplicate matricule only if matricule is being changed
+        if current_personnel['matricule'] != matricule:
+            cur.execute("SELECT id FROM personnel WHERE matricule = %s", (matricule,))
+            if cur.fetchone():
+                cur.close()
+                conn.close()
+                return jsonify({"success": False, "error": "Ce matricule existe déjà"}), 400
 
         # Update personnel
         cur.execute("""
@@ -139,18 +191,34 @@ def update_personnel(personnel_id):
             WHERE id = %s
         """, (matricule, nom, qualification, affectation, personnel_id))
 
-        if cur.rowcount == 0:
-            cur.close()
-            conn.close()
-            return jsonify({"success": False, "error": "Personnel non trouvé"}), 404
+        # Note: cur.rowcount can be 0 when values are unchanged. We already checked existence above,
+        # so do not treat 0 affected rows as not found. Proceed to update section links below.
 
         # Reset and reinsert sections
         cur.execute("DELETE FROM personnel_section WHERE personnel_id = %s", (personnel_id,))
-        for sid in section_ids:
-            cur.execute(
-                "INSERT INTO personnel_section (personnel_id, section_id) VALUES (%s, %s)",
-                (personnel_id, sid),
-            )
+        
+        # Only insert sections if provided
+        if section_ids:
+            # Convert to integers and validate
+            try:
+                section_ids = [int(sid) for sid in section_ids if sid]
+            except (ValueError, TypeError):
+                cur.close()
+                conn.close()
+                return jsonify({"success": False, "error": "Invalid section ID format"}), 400
+                
+            for sid in section_ids:
+                # Validate section exists before inserting
+                cur.execute("SELECT id FROM section WHERE id = %s", (sid,))
+                if cur.fetchone():
+                    cur.execute(
+                        "INSERT INTO personnel_section (personnel_id, section_id) VALUES (%s, %s)",
+                        (personnel_id, sid),
+                    )
+                else:
+                    cur.close()
+                    conn.close()
+                    return jsonify({"success": False, "error": f"Section with ID {sid} not found"}), 400
 
         conn.commit()
         cur.close()

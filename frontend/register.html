@@ -5,76 +5,110 @@
       x-effect="localStorage.setItem('dark', JSON.stringify(dark)); document.documentElement.classList.toggle('dark', dark)">
 <head>
   <meta charset="UTF-8">
-  <title>Inscription Utilisateur</title>
+  <title>Register - Personnel Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs" defer></script>
- 
+  <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 flex h-screen text-gray-900 dark:text-gray-100">
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-lg h-full flex flex-col"></aside>
-
-  <!-- Main content -->
-  <main class="flex-1 p-8 overflow-y-auto">
-    <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-6">👤 Inscription Utilisateur</h2>
-
-    <!-- Horizontal container -->
-    <div class="flex flex-col lg:flex-row gap-6">
-      <!-- Signup Form (Left) -->
-      <div class="bg-white dark:bg-gray-800 shadow rounded p-6 mb-6 lg:mb-0 lg:w-2/5">
-        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-4">Créer un compte</h3>
-        <form id="signupForm" class="space-y-3">
-          <input id="firstname" type="text" placeholder="Prénom" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-          <input id="lastname" type="text" placeholder="Nom" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-          <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-          <input id="password" type="password" placeholder="Mot de passe" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-
-          <select id="role" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-            <option value="">Sélectionnez un rôle</option>
-            <option value="user">Utilisateur</option>
-            <option value="admin">Administrateur</option>
-          </select>
-
-        <input type="hidden" id="personnelId" value="">
-<input type="hidden" id="userId" value="">
-
-<button type="submit" id="submitUser" data-mode="add">✅ Enregistrer</button>
-
-
-        </form>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md">
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
+      <div class="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <i class="fas fa-user-plus text-2xl text-green-600"></i>
       </div>
-
-      <!-- Token Result (Right) -->
-      <div class="bg-white dark:bg-gray-800 shadow rounded p-6 flex-1">
-        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-100 mb-4">Résultat de l'inscription</h3>
-        <p id="notification" class="text-sm whitespace-pre-wrap"></p>
-        <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-100 mb-4">📋 Utilisateurs enregistrés</h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
-                <thead class="bg-gray-200 dark:bg-gray-700">
-                  <tr>
-                    <th class="px-2 py-1 border">Prénom</th>
-                    <th class="px-2 py-1 border">Nom</th>
-                    <th class="px-2 py-1 border">Email</th>
-                    <th class="px-2 py-1 border">Rôle</th>
-                    <th class="px-2 py-1 border">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTable" class="bg-white dark:bg-gray-800"></tbody>
-              </table>
-            </div>
-      </div>
-      <hr class="my-6">
-
-
-
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Personnel System</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Create New Account</p>
     </div>
-  </main>
-  <!-- Scripts -->
-  <script type="module" src="./js/protected.js"></script>
-  <script type="module" src="./js/register.js"></script>
-  <!-- Scripts -->
 
+    <!-- Register Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+          <i class="fas fa-user-plus text-green-600 mr-2"></i>
+          Register
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Create your account</p>
+      </div>
+      
+      <form id="signupForm" class="form-compact">
+        <div class="form-group">
+          <label for="firstname">
+            <i class="fas fa-user mr-1"></i>
+            First Name
+          </label>
+          <input type="text" id="firstname" placeholder="John" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="lastname">
+            <i class="fas fa-user mr-1"></i>
+            Last Name
+          </label>
+          <input type="text" id="lastname" placeholder="Doe" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope mr-1"></i>
+            Email Address
+          </label>
+          <input type="email" id="email" placeholder="john.doe@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock mr-1"></i>
+            Password
+          </label>
+          <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="role">
+            <i class="fas fa-shield-alt mr-1"></i>
+            Role
+          </label>
+          <select id="role" required>
+            <option value="">Select Role</option>
+            <option value="user">User</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success w-full">
+          <i class="fas fa-user-plus mr-2"></i>
+          Create Account
+        </button>
+      </form>
+      
+      <div id="notification" class="mt-4 text-center"></div>
+      
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Already have an account? 
+          <a href="login.html" class="text-blue-600 hover:text-blue-700 font-medium">
+            Sign in here
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-8">
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        © 2024 Personnel Management System. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" @click="dark = !dark" title="Toggle theme">
+    <i class="fas fa-sun sun-icon"></i>
+    <i class="fas fa-moon moon-icon"></i>
+  </button>
+
+  <script type="module" src="./js/register.js"></script>
 </body>
 </html>

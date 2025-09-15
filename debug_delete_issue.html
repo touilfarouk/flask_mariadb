@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Delete Issue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Debug Delete Functionality</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Delete API Calls</h2>
+            <div id="results" class="space-y-2"></div>
+            <button id="testDelete" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Test Delete Functions
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Personnel List with Debug Delete</h2>
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="border border-gray-300 p-2">ID</th>
+                        <th class="border border-gray-300 p-2">Name</th>
+                        <th class="border border-gray-300 p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="personnelDebugTable">
+                    <!-- Data loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        // API wrapper
+        const API_BASE_URL = "http://127.0.0.1:3000";
+        
+        const api = {
+            get: async (url) => request("GET", url),
+            post: async (url, body) => request("POST", url, body),
+            put: async (url, body) => request("PUT", url, body),
+            delete: async (url) => request("DELETE", url),
+        };
+
+        async function request(method, url, body = null) {
+            try {
+                const token = localStorage.getItem("token");
+                
+                console.log(`🔍 API Request: ${method} ${url}`);
+                console.log(`🔑 Token exists: ${!!token}`);
+                
+                const res = await fetch(API_BASE_URL + url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: "Bearer " + token } : {})
+                    },
+                    body: body ? JSON.stringify(body) : null,
+                });
+
+                const data = await res.json().catch(() => ({}));
+                
+                console.log(`📊 Response: ${res.status} ${res.statusText}`, data);
+
+                if (!res.ok) {
+                    console.error(`❌ API Error: ${res.status} ${res.statusText}`, data);
+                    return { ok: false, error: data.error || res.statusText, status: res.status };
+                }
+
+                return { ok: true, ...data };
+            } catch (err) {
+                console.error("💥 API Request failed:", err);
+                return { ok: false, error: err.message };
+            }
+        }
+
+        // Login first
+        async function login() {
+            const loginRes = await api.post("/auth/login", {
+                email: "admin@example.com",
+                password: "admin123"
+            });
+            
+            if (loginRes.ok && loginRes.token) {
+                localStorage.setItem("token", loginRes.token);
+                console.log("✅ Login successful");
+                return true;
+            } else {
+                console.error("❌ Login failed:", loginRes.error);
+                return false;
+            }
+        }
+
+        // Load personnel for testing
+        async function loadPersonnelDebug() {
+            try {
+                const { data } = await api.get("/personnel/all");
+                const tbody = document.querySelector("#personnelDebugTable");
+                tbody.innerHTML = "";
+
+                (data || []).forEach(({ id, nom }) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td class="border border-gray-300 p-2">${id}</td>
+                        <td class="border border-gray-300 p-2">${nom}</td>
+                        <td class="border border-gray-300 p-2">
+                            <button class="debug-delete-btn bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600" 
+                                    data-id="${id}" data-name="${nom}">
+                                🗑 Debug Delete
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Attach delete event listeners
+                document.querySelectorAll(".debug-delete-btn").forEach(btn => {
+                    btn.addEventListener("click", async (e) => {
+                        const id = e.target.dataset.id;
+                        const name = e.target.dataset.name;
+                        
+                        console.log(`🎯 Attempting to delete personnel ID: ${id}, Name: ${name}`);
+                        
+                        if (!confirm(`Delete ${name}?`)) return;
+                        
+                        const deleteRes = await api.delete(`/personnel/${id}`);
+                        console.log(`🔄 Delete result:`, deleteRes);
+                        
+                        if (deleteRes.ok) {
+                            console.log("✅ Delete successful");
+                            await loadPersonnelDebug(); // Reload
+                        } else {
+                            console.error("❌ Delete failed:", deleteRes.error);
+                            alert(`Delete failed: ${deleteRes.error}`);
+                        }
+                    });
+                });
+
+            } catch (err) {
+                console.error("💥 Error loading personnel:", err);
+            }
+        }
+
+        // Test delete functionality
+        document.getElementById("testDelete").addEventListener("click", async () => {
+            const results = document.getElementById("results");
+            results.innerHTML = "<p>Testing delete functionality...</p>";
+            
+            // Test 1: Create test personnel
+            console.log("🧪 Test 1: Creating test personnel");
+            const createRes = await api.post("/personnel/add", {
+                matricule: "DEBUG_DELETE_001",
+                nom: "Debug Delete Test",
+                qualification: "Test",
+                affectation: "Test",
+                sections: []
+            });
+            
+            if (createRes.ok) {
+                const testId = createRes.id;
+                results.innerHTML += `<p>✅ Created test personnel ID: ${testId}</p>`;
+                
+                // Test 2: Delete the test personnel
+                console.log(`🧪 Test 2: Deleting test personnel ID: ${testId}`);
+                const deleteRes = await api.delete(`/personnel/${testId}`);
+                
+                if (deleteRes.ok) {
+                    results.innerHTML += `<p>✅ Delete successful: ${deleteRes.message}</p>`;
+                } else {
+                    results.innerHTML += `<p>❌ Delete failed: ${deleteRes.error}</p>`;
+                }
+            } else {
+                results.innerHTML += `<p>❌ Failed to create test personnel: ${createRes.error}</p>`;
+            }
+            
+            await loadPersonnelDebug();
+        });
+
+        // Initialize
+        async function init() {
+            const loggedIn = await login();
+            if (loggedIn) {
+                await loadPersonnelDebug();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
